@@ -413,7 +413,15 @@ where
                 if lv.1 == RetentionFlags::EPHEMERAL &&
                     (rv.1 & (RetentionFlags::MARKED | RetentionFlags::REFERENCE)) == RetentionFlags::EPHEMERAL =>
             {
-                Tree::leaf((H::combine(level, &lv.0, &rv.0), rv.1))
+                // Use the annotation as the root of the replacement leaf when the caller supplied
+                // one: it is the root of this pair of leaves, which is what `H::combine` would
+                // recompute here. The caller's value is the root of the node being rebuilt, so it
+                // saves the hash on every collapse along a path.
+                let root = ann.map_or_else(
+                    || H::combine(level, &lv.0, &rv.0),
+                    |cached| cached.as_ref().clone(),
+                );
+                Tree::leaf((root, rv.1))
             }
             (left, right) => {
                 // Cache the root of the new parent when the roots of both children are

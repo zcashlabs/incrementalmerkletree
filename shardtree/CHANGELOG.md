@@ -19,6 +19,11 @@ and this project adheres to Rust's notion of
   `LocatedTree::from_iter`, `ShardTree::batch_insert`, `ShardTree::insert_tree`
   and pruning therefore contain more annotated parents than before; the leaves,
   retention flags, roots and witnesses are unchanged.
+- When two ephemeral leaves of a `shardtree::PrunableTree` are collapsed into a
+  single replacement leaf and the node being rebuilt carries a root annotation,
+  that annotation is now used as the replacement leaf's hash instead of being
+  recomputed from the two leaf hashes. The leaves, retention flags, roots and
+  witnesses are unchanged.
 
 ## [0.7.1] - 2026-07-17
 
