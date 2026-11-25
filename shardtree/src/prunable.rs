@@ -415,7 +415,18 @@ where
             {
                 Tree::leaf((H::combine(level, &lv.0, &rv.0), rv.1))
             }
-            (left, right) => Tree::parent(ann, left, right),
+            (left, right) => {
+                // Cache the root of the new parent when the roots of both children are
+                // already known (each child is a leaf or an annotated parent). This costs one
+                // hash, performed once where the parent is constructed. `root_hash`, and
+                // therefore `merge_checked` and `insert_subtree`, then reads the cached value
+                // instead of recomputing the hash of the whole subtree on every call.
+                let ann = ann.or_else(|| match (left.node_value(), right.node_value()) {
+                    (Some(l), Some(r)) => Some(Arc::new(H::combine(level, l, r))),
+                    _ => None,
+                });
+                Tree::parent(ann, left, right)
+            }
         }
     }
 }
@@ -1449,10 +1460,12 @@ mod tests {
         let t0 = parent(leaf(("c".to_string(), RetentionFlags::MARKED)), t);
         assert_eq!(
             t0.prune(Level::from(2)),
+            // The roots of both children are known, so the parent now caches its own root.
             parent(
                 leaf(("c".to_string(), RetentionFlags::MARKED)),
                 leaf(("ab".to_string(), RetentionFlags::EPHEMERAL))
             )
+            .reannotate_root(Some(Arc::new("cab".to_string())))
         );
     }
 
