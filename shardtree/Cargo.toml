@@ -1,6 +1,8 @@
 [package]
-name = "shardtree"
-description = "A space-efficient Merkle tree with witnessing of marked leaves, checkpointing & state restoration."
+# A fork release of `shardtree`. The library name stays `shardtree`, so a consumer renames the
+# dependency in its manifest and changes no source.
+name = "zcashlabs-shardtree"
+description = "A space-efficient Merkle tree with witnessing of marked leaves, checkpointing & state restoration. Zcash Labs fork of `shardtree`, which caches the root of a parent node when the roots of both children are known."
 version = "0.7.2"
 authors = [
     "Kris Nuttycombe <kris@nutty.land>",
@@ -8,9 +10,14 @@ authors = [
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-homepage.workspace = true
-repository.workspace = true
+# Overridden: the workspace fields name the upstream repository, and a published fork must point
+# at the fork so that a reader of crates.io finds the source of what they are running.
+homepage = "https://github.com/zcashlabs/incrementalmerkletree"
+repository = "https://github.com/zcashlabs/incrementalmerkletree"
 categories.workspace = true
+
+[lib]
+name = "shardtree"
 
 [package.metadata.docs.rs]
 all-features = true
