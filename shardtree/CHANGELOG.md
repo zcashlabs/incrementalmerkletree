@@ -10,6 +10,7 @@ and this project adheres to Rust's notion of
 ## [0.7.2] - 2026-11-25
 
 ### Changed
+- MSRV is now 1.88.
 - A parent node of a `shardtree::PrunableTree` now caches its root as its
   annotation when it is constructed from two children whose roots are both
   already known (each child is a leaf or an annotated parent). Previously such
